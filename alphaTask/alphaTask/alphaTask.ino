@@ -55,23 +55,18 @@ int getAngle(){
       return RAD_TO_DEG * (atan2(-yAng, -zAng)+PI); // convert radians to degree   
 }
 
-void turn(int angle, char turnDir, char driveDir){ 
-      if ( turnDir == 'l'){
+void turn(int angle, char dir){ 
+      if ( dir == 'l'){
         serv.writeMicroseconds(1500 - var) //fill in var
       }
-      if ( turnDir == 'r'){
+      if ( dir == 'r'){
         serv.writeMicroseconds(1500 + var) //fill in var
       }
-      int initAngle,currAngle  = getAngle(); 
-        while (abs(currAngle - initAngle) < angle){
-          currAngle = getAngle();
-          if( driveDir == 'f'){
-           forward(255); //Change speed if too fast
-          }else if ( driveDir == 'r'){
-           reverse(255);                                     
-          }
-          //Need to test ^
-        }
+      int initAngle,currAngle  = getAngle();      
+      while (abs(currAngle - initAngle) < angle){
+        currAngle = getAngle();
+        forward(255); //Change speed if too fast
+      }
       brake();
       serv.writeMicroseconds(1500); 
 }
@@ -111,10 +106,9 @@ void setup(){
   Wire.beginTransmission(MPU_addr);  
 
   Wire.write(0x6B); // Put Gyro Sensor to Sleep                    
-  Wire.write(0); // Turn on Gyro Sensor
+  Wire.write(0); // Turn on Gryo Sensor
   Wire.endTransmission(true);      // End Transmission
 }
-
 
 void loop() {
     // Reverse Speed = 255, no Speed = 0
@@ -160,18 +154,9 @@ void loop() {
      *  
      */
      /* Initial Encoder Value */
-
-
-
-     //Need to pull up to the front car (rears need to be inline with one another)
-     moveDistance( 3,'f'); 
-     //turn the car to fit into the parking slot 
-     turn(-35, 'r', 'r');
-     //Go back a distance of X
-     moveDistance(2,'r');
-     //realign the car parallel to curb
-     turn(0,'l','r');
-     //Wire.write(0);
      
+     moveDistance( 3,'f'); // Consideration: the robot does not turn in place 
+     turn(90, 'r');
+     moveDistance( 3,'f');
 
 }

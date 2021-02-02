@@ -35,6 +35,8 @@ int getAngle() {
 
   return RAD_TO_DEG * (atan2(-yAng, -zAng) + PI); // convert radians to degree
 }
+
+//original
 void turn(int angle, char dir) {
   if ( dir == 'l') {
     serv.writeMicroseconds(1500 - var) //fill in var
@@ -49,6 +51,28 @@ void turn(int angle, char dir) {
   }
   serv.writeMicroseconds(1500);
 }
+//updated
+void turnUpdated(int angle, char turnDir, char driveDir){ 
+      if ( turnDir == 'l'){
+        serv.writeMicroseconds(1500 - var) //fill in var
+      }
+      if ( turnDir == 'r'){
+        serv.writeMicroseconds(1500 + var) //fill in var
+      }
+      int initAngle,currAngle  = getAngle(); 
+        while (abs(currAngle - initAngle) < angle){
+          currAngle = getAngle();
+          if( driveDir == 'f'){
+           forward(255); //Change speed if too fast
+          }else if ( driveDir == 'r'){
+           reverse(255);                                     
+          }
+          //Need to test ^
+        }
+      brake();
+      serv.writeMicroseconds(1500); 
+}
+
 void moveDistance(long dist, char dir) {
   enc.write(0); // initizliate encoder to 0
   bool move = true;
