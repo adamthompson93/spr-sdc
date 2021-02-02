@@ -7,6 +7,10 @@ int enabler1, enabler2;   //motor controller enable pins
 int ir1, ir2, ir3, ir4; // ir1 and 2 are top left and right, ir3 and 4 are bottom left and right
 Servo serv;
 Encoder enc(2, 3);
+// Ultrasonic Sensor
+HCSR04 hc(2,3);
+// Encoder
+Encoder enc(2, 3);
 
 
 /*
