@@ -12,16 +12,6 @@ HCSR04 hc(2,3);
 // Encoder
 Encoder enc(2, 3);
 
-
-/*
-    Drives the car using the motor controller commands
-    Inputs:
-      [char] dir: motor direction commands
-        {'b': brake, 'r': reverse, 'f': forward, 'c': coast}
-      [int] speed: motor speed (full speed is 255)
-        {0 <= speed <= 255}
-*/
-
 void brake() {
   digitalWrite(out1, LOW);
   digitalWrite(out2, LOW);
@@ -57,14 +47,15 @@ void turn(int angle, char dir) {
 }
 //updated
 void turnUpdated(int angle, char turnDir, char driveDir){ 
-      if ( turnDir == 'l'){
-        serv.writeMicroseconds(1500 - var) //fill in var
-      }
-      if ( turnDir == 'r'){
-        serv.writeMicroseconds(1500 + var) //fill in var
-      }
+      
       int initAngle,currAngle  = getAngle(); 
         while (abs(currAngle - initAngle) < angle){
+          if ( turnDir == 'l'){
+            serv.writeMicroseconds(1500 - var) //fill in var
+          }
+          if ( turnDir == 'r'){
+            serv.writeMicroseconds(1500 + var) //fill in var
+          }
           currAngle = getAngle();
           if( driveDir == 'f'){
            forward(255); //Change speed if too fast
@@ -76,7 +67,14 @@ void turnUpdated(int angle, char turnDir, char driveDir){
       brake();
       serv.writeMicroseconds(1500); 
 }
-
+void turn(char dir){
+  if ( turnDir == 'l'){
+        serv.writeMicroseconds(1500 - var) //fill in var
+   }
+   if ( turnDir == 'r'){
+       serv.writeMicroseconds(1500 + var) //fill in var
+  }
+}
 void moveDistance(long dist, char dir) {
   enc.write(0); // initizliate encoder to 0
   bool move = true;
@@ -96,12 +94,21 @@ void moveDistance(long dist, char dir) {
   }
 }
 
+/*
+    Drives the car using the motor controller commands
+    Inputs:
+      [char] dir: motor direction commands
+        {'b': brake, 'r': reverse, 'f': forward, 'c': coast}
+      [int] speed: motor speed (full speed is 255)
+        {0 <= speed <= 255}
+*/
+
 void drive(char dir, int spd = 0) {
   motor_in = {        //set motor input data based on desired direction
     dir == 'f' || dir == 'c', //in1 is 1 when forward or coast, and 0 otherwise
     dir == 'r' || dir == 'c'  //in2 is 1 when reverse or coast, and 0 otherwise
   }
-  if ( dir == 'f') {
+  if (motor_in[0] == 1 && motor_in[1] == 0 ){
     digitalWrite(out1, HIGH);
     digitalWrite(out2, LOW);
     analogWrite(enabler1, spd);
@@ -110,7 +117,7 @@ void drive(char dir, int spd = 0) {
     digitalWrite(out4, LOW);
     analogWrite(enabler2, spd);
   }
-  if (dir == 'r') {
+  else if (motor_in[0] == 0 && motor_in[1] == 1)  {
     digitalWrite(out1, LOW);
     digitalWrite(out2, HIGH);
     analogWrite(enabler1, spd);
@@ -118,10 +125,15 @@ void drive(char dir, int spd = 0) {
     digitalWrite(out3, LOW);
     digitalWrite(out4, HIGH);
     analogWrite(enabler2, spd);
-
+    
+  }else if(motor_in[0] == 1 && motor_in[1] == 1){
+    digitalWrite(out1, HIGH);
+    digitalWrite(out2, HIGH);
+    digitalWrite(out3, HIGH);
+    digitalWrite(out4, HIGH);
+  }else 
+    brake()
   }
-
-}
 void setup() {
   pinMode(out1, OUTPUT);
   pinMode(out2, OUTPUT);
