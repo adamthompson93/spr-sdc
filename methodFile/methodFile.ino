@@ -108,32 +108,13 @@ void drive(char dir, int spd = 0) {
     dir == 'f' || dir == 'c', //in1 is 1 when forward or coast, and 0 otherwise
     dir == 'r' || dir == 'c'  //in2 is 1 when reverse or coast, and 0 otherwise
   }
-  if (motor_in[0] == 1 && motor_in[1] == 0 ){
-    digitalWrite(out1, HIGH);
-    digitalWrite(out2, LOW);
-    analogWrite(enabler1, spd);
-
-    digitalWrite(out3, HIGH);
-    digitalWrite(out4, LOW);
-    analogWrite(enabler2, spd);
+  
+    digitalWrite(out1, motor_in[0]);
+    digitalWrite(out2, motor_in[0]);
+    digitalWrite(out3, motor_in[1]);
+    digitalWrite(out4, motor_in[1]);
   }
-  else if (motor_in[0] == 0 && motor_in[1] == 1)  {
-    digitalWrite(out1, LOW);
-    digitalWrite(out2, HIGH);
-    analogWrite(enabler1, spd);
-
-    digitalWrite(out3, LOW);
-    digitalWrite(out4, HIGH);
-    analogWrite(enabler2, spd);
-    
-  }else if(motor_in[0] == 1 && motor_in[1] == 1){
-    digitalWrite(out1, HIGH);
-    digitalWrite(out2, HIGH);
-    digitalWrite(out3, HIGH);
-    digitalWrite(out4, HIGH);
-  }else 
-    brake()
-  }
+  
 void setup() {
   pinMode(out1, OUTPUT);
   pinMode(out2, OUTPUT);
