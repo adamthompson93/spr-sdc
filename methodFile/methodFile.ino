@@ -1,8 +1,10 @@
 #include <Wire.h>
 #include <Servo.h>
 #include <Encoder.h>
+#include <HCSR04.h>
+const int MPU_ADDR = 0x68; // I2C address of the MPU-6050 
 int in1, in2, in3, in4;    //motor controller input pins
-int out1, out2, out3, out4;
+int out1, out2, out3, out4; // motor controller out pins
 int enabler1, enabler2;   //motor controller enable pins
 int ir1, ir2, ir3, ir4; // ir1 and 2 are top left and right, ir3 and 4 are bottom left and right
 Servo serv;
@@ -19,14 +21,18 @@ void brake() {
   digitalWrite(out4, LOW);
 }
 int getAngle() {
+  Wire.beginTransmission(MPU_addr); 
+  Wire.write(0x3b); 
+  Wire.endTransmission(false);      // Block transmission from other devices
   axis_X = Wire.read() << 8 | Wire.read();
   axis_Y = Wire.read() << 8 | Wire.read();
   axis_Z = Wire.read() << 8 | Wire.read();
-
+  
+  
   int xAng = map(axis_X, minVal, maxVal, -90, 90);
   int yAng = map(axis_Y, minVal, maxVal, -90, 90);
   int zAng = map(axis_Z, minVal, maxVal, -90, 90);
-
+  
   return RAD_TO_DEG * (atan2(-yAng, -zAng) + PI); // convert radians to degree
 }
 
@@ -108,7 +114,7 @@ void drive(char dir, int spd = 0) {
     dir == 'f' || dir == 'c', //in1 is 1 when forward or coast, and 0 otherwise
     dir == 'r' || dir == 'c'  //in2 is 1 when reverse or coast, and 0 otherwise
   }
-  
+
     digitalWrite(out1, motor_in[0]);
     digitalWrite(out2, motor_in[0]);
     digitalWrite(out3, motor_in[1]);
@@ -130,11 +136,12 @@ void setup() {
 
   // Gyro Sensor
   Wire.begin();
-  Wire.beginTransmission(MPU_addr);
+  
 
-  Wire.write(0x6B); // Put Gyro Sensor to Sleep
+  /*Wire.write(0x6B); // Put Gyro Sensor to Sleep
   Wire.write(0); // Turn on Gryo Sensor
-  Wire.endTransmission(true);      // End Transmission
+  */
+  
 }
 
 void loop() {
