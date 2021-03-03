@@ -6,12 +6,12 @@ Servo serv;
   
 void setup() {
   serv.attach(4); //TODO: attach servo pin
-
+  serv.write(130); // set servo to angle pos
  
 }
 
 void loop() {
  
 
-  serv.write(130); // set servo to angle pos
+ 
 }
